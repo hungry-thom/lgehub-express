@@ -1,0 +1,14 @@
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+global.config = require('./config');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(require('./controllers')); //routes that don't require token
+app.use(require('./middlewares/TokenValidator')); 
+app.use(require('./controllers/account')); //Apis that need token
+
+app.listen(config.port, function() {
+	console.log("Listening on port: " + config.port);
+});

@@ -1,0 +1,16 @@
+"use strict";
+var r = require('rethinkdb');
+
+model.setup = function () {
+  console.log("[127.0.0.1 %s] Setting up rethinkDB..", new Date().toISOString();
+    rethinkdb.connect({
+      host: 'localhost',
+      port: 28015,
+      db: 'koox'
+    });
+  }
+
+  Db.prototype.addNewUser = async function (userData) {
+    let connection = null
+    try {
+      connection = await this.connectToDb() 
