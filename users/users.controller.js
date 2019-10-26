@@ -6,7 +6,7 @@ const Role = require('../_helpers/role');
 
 // routes
 router.post('/authenticate', authenticate); // public route
-// router.get('/', authorize(Role.Admin), getAll); // admin only
+router.get('/', authorize(Role.Admin), getAll); // admin only
 router.get('/:id', authorize(), getById); // all authenticated users
 module.exports = router;
 
@@ -17,13 +17,11 @@ function authenticate (req, res, next) {
     .catch(err => next(err));
 }
 
-/*
 function getAll (req, res, next) {
   userService.getAll()
     .then(users => res.json(users))
     .catch(err => next(err));
 }
-*/
 
 function getById (req, res, next) {
   const currentUser = req.user;

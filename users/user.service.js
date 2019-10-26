@@ -6,7 +6,8 @@ const Umodel = require('./user.rethinkdb.model.js');
 
 module.exports = {
   authenticate,
-  getById
+  getById,
+  getAll
 };
 
 async function authenticate ({username, password }) {
@@ -23,14 +24,11 @@ async function authenticate ({username, password }) {
     };
   }
 }
-/*
+
 async function getAll () {
-  return await User.find 
-    const { password, ...userWithoutPassword } = u;
-    return userWithoutPassword;
-  });
+  const users = await Umodel.getAll(); // receives as array, no hash
+  return users;
 }
-*/
 
 async function getById (id) {
   const user = await Umodel.getById(id);
