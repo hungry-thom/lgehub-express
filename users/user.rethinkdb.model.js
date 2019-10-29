@@ -6,7 +6,7 @@ module.exports = {
   getAll
 };
 
-const hostConf = '192.168.100.12'
+const hostConf = '192.168.100.102'
 // const hostConf = 'localhost'
 const dbConfig = {
   host: hostConf,
