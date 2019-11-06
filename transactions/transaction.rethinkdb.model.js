@@ -16,14 +16,18 @@ async function incomeByDates (startDate, endDate) {
   let connection , transactions
   try {
     connection = await r.connect(dbConfig)
-    transactions = await r.table('test').filter(function (trans) {
-      return trans('transactionDate').le(endDate).and(trans('transactionDate').ge(startDate)).run(connection)
-    })
+    transactions = await r.table('test').between(endDate, startDate, {index: "transactionDate"}).run(connection)
+    /*
+    transactions = await r.table('test').filter(function (t) {
+      console.log(t('transactionDate'))
+      return t('transactionDate').le(endDate).and(t('transactionDate').ge(startDate))
+    }).run(connection)
+    */
   }
   catch (err) {
     console.log(err)
   }
   connection && connection.close()
-  return transactionService.toArray()
+  return transactions.toArray()
 }
 

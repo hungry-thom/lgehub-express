@@ -3,14 +3,17 @@ const jwt = require('jsonwebtoken')
 const Role = require('../_helpers/role')
 const bcrypt = require('bcryptjs')
 const model = require('./transaction.rethinkdb.model.js')
+const _ = require('lodash')
 
 module.exports = {
  incomeByDates 
 }
 
-async function incomeByDates ({startDate, endDate}) {
+async function incomeByDates (startDate, endDate) {
+  console.log('serv', startDate, endDate)
   // transactions will be returned as array
   let transactions = await model.incomeByDates(startDate, endDate)
+  console.log('reResp', transactions)
   let rev = 0
   let exp = 0
   transactions.forEach(trans => {
@@ -25,6 +28,6 @@ async function incomeByDates ({startDate, endDate}) {
       }
     })
   })
-  return { revenue: rev, expense: exp}
+  return { revenue: _.round(rev,2), expense: _.round(exp, 2)}
 }
 

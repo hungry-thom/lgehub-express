@@ -1,18 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const userService = require('./transaction.service.js');
+const transactionService = require('./transaction.service.js');
 const authorize = require('../_helpers/authorize');
 const Role = require('../_helpers/role');
 
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
-router.get('/income/:startDate-:endDate', authorize(), incomeByDates);
+router.get('/income/:startDate.:endDate', authorize(), incomeByDates);
+router.get('/items/', authorize(), getAllItems());
 module.exports = router;
 
 function incomeByDates (req, res, next) {
-  transactionService.incomeByDates(req.startDate, req.endDate)
+  console.log('req')
+  transactionService.incomeByDates(req.params.startDate, req.params.endDate)
     .then(transactions => res.json(transactions))
     .catch(err => next(err));
+}
+
+function getAllItems (req, res, next) {
+  console.log('reqAllItems')
+  transactionService.getAllItems()
+  .then(items => res.json(items))
+  .catch(err => next(err));
 }
 
 /*
