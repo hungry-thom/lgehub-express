@@ -6,7 +6,8 @@ const model = require('./transaction.rethinkdb.model.js')
 const _ = require('lodash')
 
 module.exports = {
- incomeByDates 
+  incomeByDates,
+  getAllItems
 }
 
 async function incomeByDates (startDate, endDate) {
@@ -31,3 +32,9 @@ async function incomeByDates (startDate, endDate) {
   return { revenue: _.round(rev,2), expense: _.round(exp, 2)}
 }
 
+async function getAllItems () {
+  console.log('serviceAllItems')
+  let items = await model.getAllItems()
+  console.log('servRestAllItems', items)
+  return items
+}

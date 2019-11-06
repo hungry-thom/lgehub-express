@@ -1,7 +1,8 @@
 const r = require('rethinkdb')
 
 module.exports = {
- incomeByDates 
+  incomeByDates,
+  getAllItems
 }
 
 const hostConf = '192.168.100.102'
@@ -31,3 +32,19 @@ async function incomeByDates (startDate, endDate) {
   return transactions.toArray()
 }
 
+async function getAllItems() {
+  let connection, items
+  try {
+    connection = await r.connect(dbConfig)
+    items = await r.table('test').concatMap(function(transaction) {
+      return transaction('debit').filter(function(deb) {
+        return deb('item')
+      })
+    })
+  }
+  catch (err) {
+    console.log('err reGetAllItems', err)
+  }
+  connection && connection.close()
+  return items.toArray()
+}
