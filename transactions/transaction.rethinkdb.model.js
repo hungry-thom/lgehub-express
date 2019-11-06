@@ -40,7 +40,7 @@ async function getAllItems() {
       return transaction('debit').filter(function(deb) {
         return deb('item')
       })
-    })
+    }).run(connection)
   }
   catch (err) {
     console.log('err reGetAllItems', err)

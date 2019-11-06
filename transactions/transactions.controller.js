@@ -7,7 +7,7 @@ const Role = require('../_helpers/role');
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
 router.get('/income/:startDate.:endDate', authorize(), incomeByDates);
-router.get('/items/', authorize(), getAllItems());
+router.get('/items/', authorize(), getAllItems);
 module.exports = router;
 
 function incomeByDates (req, res, next) {
