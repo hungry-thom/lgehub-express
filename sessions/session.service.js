@@ -2,7 +2,7 @@ const { secret } = require('../config.json')
 const jwt = require('jsonwebtoken')
 const Role = require('../_helpers/role')
 const bcrypt = require('bcryptjs')
-const model = require('./transaction.rethinkdb.model.js')
+const model = require('./session.rethinkdb.model.js')
 const _ = require('lodash')
 
 module.exports = {

@@ -1,7 +1,7 @@
 const r = require('rethinkdb')
 
 module.exports = {
-  incomeByDates,
+  createSession,
   getAllItems
 }
 
@@ -29,7 +29,7 @@ async function createSession ( newSession ) {
     console.log(err)
   }
   connection && connection.close()
-  console.log('rethinkCreateSession', createdSession.next())
+  console.log('rethinkCreateSession', createdSession)
   return createdSession
 }
 
