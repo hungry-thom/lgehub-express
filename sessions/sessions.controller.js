@@ -6,14 +6,14 @@ const Role = require('../_helpers/role');
 
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
-router.post('/session/:startDate.:endDate', authorize(), incomeByDates);
+router.post('/session/create', authorize(), createSession);
 router.get('/items/', authorize(), getAllItems);
 module.exports = router;
 
-function incomeByDates (req, res, next) {
-  console.log('req')
-  transactionService.incomeByDates(req.params.startDate, req.params.endDate)
-    .then(transactions => res.json(transactions))
+function createSession (req, res, next) {
+  console.log('reqCreateSession')
+  sessionService.createSession(req.body)
+    .then(createdSession => res.json(createdSession))
     .catch(err => next(err));
 }
 
