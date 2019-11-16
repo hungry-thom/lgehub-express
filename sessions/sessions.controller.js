@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const transactionService = require('./transaction.service.js');
+const sessionService = require('./session.service.js');
 const authorize = require('../_helpers/authorize');
 const Role = require('../_helpers/role');
 
