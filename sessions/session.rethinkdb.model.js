@@ -1,6 +1,7 @@
 const r = require('rethinkdb')
 
 module.exports = {
+  openSession,
   createSession,
   getAllItems
 }
@@ -11,6 +12,20 @@ const dbConfig = {
   host: hostConf,
   port: 28015,
   db: 'test'
+}
+
+async function openSession ( username ) {
+  let connection , openedSession
+  try {
+    connection = await r.connect(dbConfig)
+    openedSession = await r.table('sessions').filter(r.row('username').eq(username).and(r.row('status').eq('active'))).run(connection)
+  }
+  catch (err) {
+    console.log(err)
+  }
+  connection && connection.close()
+  console.log('rethinkCreateSession', openedSession)
+  return openedSession.toArray()
 }
 
 async function createSession ( newSession ) {

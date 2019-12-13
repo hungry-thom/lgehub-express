@@ -6,13 +6,13 @@ const Role = require('../_helpers/role');
 
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
-router.post('/create', authorize(), createSession);
+router.post('/open', authorize(), openSession);
 router.get('/items/', authorize(), getAllItems);
 module.exports = router;
 
-function createSession (req, res, next) {
+function openSession (req, res, next) {
   console.log('reqCreateSession', req.body)
-  sessionService.createSession(req.body)
+  sessionService.openSession(req.body)
     .then(createdSession => res.json(createdSession))
     .catch(err => next(err));
 }

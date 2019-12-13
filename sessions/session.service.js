@@ -6,16 +6,16 @@ const model = require('./session.rethinkdb.model.js')
 const _ = require('lodash')
 
 module.exports = {
-  createSession,
+  openSession,
   incomeByDates,
   getAllItems
 }
 
-async function createSession (newSession) {
-  console.log('servCreateSession', newSession)
-  let createdSession = await model.createSession(newSession)
-  console.log('respCreateSession', createdSession)
-  return createdSession
+async function openSession (session) {
+  console.log('servCreateSession', session)
+  let openedSession = await model.createSession(session)
+  console.log('respCreateSession', openedSession)
+  return openedSession
 }
 
 async function incomeByDates (startDate, endDate) {
