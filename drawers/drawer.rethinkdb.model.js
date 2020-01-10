@@ -1,8 +1,10 @@
 const r = require('rethinkdb')
 
 module.exports = {
+  getActiveDrawerByTerminal,
   getDrawerByLocation,
-  getAllItems
+  setOpeningByDrawer,
+  setClosingByDrawer
 }
 
 const hostConf = '192.168.100.102'
@@ -18,7 +20,7 @@ async function getDrawerByLocation (terminal) {
   console.log('getDrawerWuery')
   try {
     connection = await r.connect(dbConfig)
-    drawer = await r.table('drawers').filter(r.row('location').eq(terminal).and(r.row('status').eq('active'))).run(connection)
+    drawer = await r.table('drawers').filter(r.row('terminal').eq(terminal).and(r.row('status').eq('active'))).run(connection)
     /*
     transactions = await r.table('test').filter(function (t) {
       console.log(t('transactionDate'))
@@ -34,6 +36,50 @@ async function getDrawerByLocation (terminal) {
   return drawer.toArray()
 }
 
+async function setOpeningByDrawer (draw) {
+  let connection , drawer
+  console.log('ModelopenDrawer')
+  try {
+    connection = await r.connect(dbConfig)
+    drawer = await r.table('drawers').insert(draw).run(connection)
+  }
+  catch (err) {
+    console.log('ModelOpenDrawerError', err)
+  }
+  connection && connection.close()
+  console.log('drawer', drawer)
+  return drawer
+}
+
+async function getActiveDrawerByTerminal(terminal) {
+  let connection, drawer
+  console.log('checkActiveOpenTerminla')
+  try {
+    connection = await r.connect(dbConfig)
+    drawer = await r.table('drawers').filter(r.row('terminal').eq(terminal).and(r.row('status').eq('active'))).run(connection)
+  }
+  catch (err) {
+    console.log('checkActieOPenError', err)
+  }
+  connection && connection.close()
+  return drawer.toArray()
+}
+
+async function setClosingByDrawer (draw) {
+  let connection , drawer
+  console.log('ModelCloseDrawer')
+  try {
+    connection = await r.connect(dbConfig)
+    drawer = await r.table('drawers').get(draw.id).replace(draw).run(connection)
+  }
+  catch (err) {
+    console.log('ModelOpenDrawerError', err)
+  }
+  connection && connection.close()
+  console.log('drawer', drawer)
+  return drawer
+}
+/*
 async function getAllItems() {
   let connection, items
   try {
@@ -50,3 +96,4 @@ async function getAllItems() {
   connection && connection.close()
   return items.toArray()
 }
+*/

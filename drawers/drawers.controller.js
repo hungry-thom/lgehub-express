@@ -6,20 +6,31 @@ const Role = require('../_helpers/role');
 
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
-router.post('/open', authorize(), createSession);
-router.get('/:terminal/', authorize(), getDrawer);
+router.post('/opening', authorize(), openDrawer);
+router.post('/closing', authorize(), closeDrawer);
+router.get('/:terminal/', authorize(), getActiveDrawerByTerminal);
 module.exports = router;
 
-function createSession (req, res, next) {
-  console.log('reqCreateSession', req.body)
-  sessionService.createSession(req.body)
-    .then(createdSession => res.json(createdSession))
-    .catch(err => next(err));
+function openDrawer (req, res, next) {
+  console.log('reqOpenDrawer', req.body);
+  drawerService.setOpening(req.body)
+  .then(response => res.json(response))
+  .catch(err => next(err));
 }
 
-function getDrawer (req, res, next) {
+function closeDrawer (req, res, next) {
+  console.log('contrCloseDrawer');
+  drawerService.setClosing(req.body)
+  .then(response => {
+    console.log('contrServiceResponse', response)
+    res.json(response)
+  })
+  .catch(err => next(err));
+}
+
+function getActiveDrawerByTerminal (req, res, next) {
   console.log('reqGetDrawer')
-  drawerService.getDrawer(req.params.terminal)
+  drawerService.getActiveDrawerByTerminal(req.params.terminal)
   .then(drawer => res.json(drawer))
   .catch(err => next(err));
 }

@@ -23,9 +23,10 @@ async function findUser (username) {
     // user resturns cursor // console.log('in model', user);
   }
   catch (err) {
-    console.log(err);
+    console.log('rethinkError', err);
   }
   connection && connection.close()
+  
   return user.next();
 }
 

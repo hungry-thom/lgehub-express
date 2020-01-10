@@ -13,7 +13,6 @@ app.use(cors());
 // api routes
 app.use('/users', require('./users/users.controller'));
 app.use('/transactions', require('./transactions/transactions.controller'));
-app.use('/sessions', require('./sessions/sessions.controller'));
 app.use('/drawers', require('./drawers/drawers.controller'));
 
 // global error handler

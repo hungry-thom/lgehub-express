@@ -13,8 +13,11 @@ module.exports = router;
 function authenticate (req, res, next) {
   console.log('body', req.body);
   userService.authenticate(req.body)
-    .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username or password is incorrect' }))
-    .catch(err => next(err));
+    .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username or password is incorrect!' }))
+    .catch(err => {
+      console.log('nextError', err);
+      err.message === 'No more rows in the cursor.' ? res.status(400).json({ message: 'Username or password is incorrect!'}) : next(err)
+    });
 }
 
 function getAll (req, res, next) {
