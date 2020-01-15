@@ -9,6 +9,7 @@ const Role = require('../_helpers/role');
 router.post('/opening', authorize(), openDrawer);
 router.post('/closing', authorize(), closeDrawer);
 router.get('/:terminal/', authorize(), getActiveDrawerByTerminal);
+router.get('/:terminal/:timestamp/prev/', authorize(), getPrevDrawer);
 module.exports = router;
 
 function openDrawer (req, res, next) {
@@ -29,10 +30,20 @@ function closeDrawer (req, res, next) {
 }
 
 function getActiveDrawerByTerminal (req, res, next) {
-  console.log('reqGetDrawer')
+  console.log('reqGetDrawer', req.params)
   drawerService.getActiveDrawerByTerminal(req.params.terminal)
   .then(drawer => res.json(drawer))
   .catch(err => next(err));
+}
+
+function getPrevDrawer (req, res, next) {
+  console.log('reqGetPrevDrawer', req.params)
+  drawerService.getPrevDrawer(req.params.terminal, req.params.timestamp)
+    .then(response => {
+      console.log('contrPrevDrawResp', response)
+      res.json(response)
+    })
+    .catch(err => next(err))
 }
 
 /*

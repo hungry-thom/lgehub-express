@@ -8,7 +8,8 @@ const model = require('./drawer.rethinkdb.model.js')
 module.exports = {
   getActiveDrawerByTerminal,
   setOpening,
-  setClosing
+  setClosing,
+  getPrevDrawer
 }
 
 async function getActiveDrawerByTerminal (terminal) {
@@ -43,6 +44,19 @@ async function setOpening (drawer) {
   }
 }
 
+async function getPrevDrawer(terminal, timestamp) {
+  console.log('serviceGetPrevDrawer')
+  let previousDrawer = await model.getPrevDrawerByTerminal(terminal, timestamp)
+  console.log('serviceGetPrevDrawerModelResp', previousDrawer)
+  if (previousDrawer.length === 0) {
+    console.log('serviceGetPrevDrawerError')
+    return new Error('no Prev Drawer found')
+  } else {
+    console.log('servGetPrevDrawerSuccess')
+    return previousDrawer[0]
+  }
+}
+
 async function setClosing (drawer) {
   console.log('serviceCloseDrawer', drawer)
   // check that there is active drawer and opening is set
@@ -62,7 +76,7 @@ async function setClosing (drawer) {
       return drawer
     } else 
       console.log('failed to update', closedDrawer)
-    return 
+    return new Error('service faiiled to close Drawer')
   }
   /*
   if (activeTerminalDrawer.length === 0) {
