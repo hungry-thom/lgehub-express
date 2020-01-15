@@ -5,7 +5,8 @@ module.exports = {
   getDrawerByLocation,
   setOpeningByDrawer,
   setClosingByDrawer,
-  getPrevDrawerByTerminal
+  getPrevDrawerByTerminal,
+  getNextDrawerByTerminal
 }
 
 const hostConf = '192.168.100.102'
@@ -43,11 +44,28 @@ async function getPrevDrawerByTerminal (terminal, timestamp) {
   try {
     connection = await r.connect(dbConfig)
     drawer = await r.table('drawers').filter(function(draw) {
-      return draw('terminal').eq(terminal).and(draw('opening')('timestamp').lt(timestamp))
+      return draw('terminal').eq(terminal).and(r.ISO8601(draw('opening')('timestamp')).lt(r.ISO8601(timestamp))
     }).run(connection)
+    // console.log('tryPrevDraw', drawer.next())
   }
   catch (err) {
     console.log('modelGEtPrevDrawError', err)
+  }
+  connection && connection.close()
+  return drawer.toArray()
+}
+
+async function getNextDrawerByTerminal (terminal, timestamp) {
+  let connection, drawer
+  console.log('modelGetNextDraw')
+  try {
+    connection = await r.connect(dbConfig)
+    drawer = await r.table('drawers').filter(function(draw) {
+      return draw('terminal').eq(terminal).and(r.ISO8601(draw('opening')('timestamp')).gt(r.ISO8601(timestamp))
+    }).run(connection)
+  }
+  catch (err) {
+    console.log('modelGEtNextDrawError', err)
   }
   connection && connection.close()
   return drawer.toArray()

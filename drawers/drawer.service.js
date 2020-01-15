@@ -9,7 +9,7 @@ module.exports = {
   getActiveDrawerByTerminal,
   setOpening,
   setClosing,
-  getPrevDrawer
+  navigateDrawer
 }
 
 async function getActiveDrawerByTerminal (terminal) {
@@ -44,16 +44,27 @@ async function setOpening (drawer) {
   }
 }
 
-async function getPrevDrawer(terminal, timestamp) {
-  console.log('serviceGetPrevDrawer')
-  let previousDrawer = await model.getPrevDrawerByTerminal(terminal, timestamp)
-  console.log('serviceGetPrevDrawerModelResp', previousDrawer)
-  if (previousDrawer.length === 0) {
+async function navigateDrawer(terminal, timestamp, nav) {
+  let drawer
+  let t = new Date(timestamp)
+  if (nav === 'prev') {
+    console.log('serviceGetPrevDrawer')
+    drawer = await model.getPrevDrawerByTerminal(terminal, timestamp)
+  } else if (nav === 'next') {
+    console.log('serviceGetNextDrawer')
+    drawer = await model.getNextDrawerByTerminal(terminal, timestamp)
+  } else {
+    // incorrect nav command
+    drawer = []
+  }
+  console.log('serviceGetPrevDrawerModelResp', drawer)
+  if (drawer.length === 0) {
+    // how to handle incorrect nav command
     console.log('serviceGetPrevDrawerError')
     return new Error('no Prev Drawer found')
   } else {
     console.log('servGetPrevDrawerSuccess')
-    return previousDrawer[0]
+    return drawer[0]
   }
 }
 
