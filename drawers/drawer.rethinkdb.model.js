@@ -43,8 +43,9 @@ async function getPrevDrawerByTerminal (terminal, timestamp) {
   console.log('modelGetPrevDraw')
   try {
     connection = await r.connect(dbConfig)
-    drawer = await r.table('drawers').filter(function(draw) {
-      return draw('terminal').eq(terminal).and(r.ISO8601(draw('opening')('timestamp')).lt(r.ISO8601(timestamp))
+    console.log(terminal, timestamp)
+    drawer = await r.table('drawers').orderBy(r.desc(r.row('opening')('timestamp'))).filter(function(draw) {
+      return draw('terminal').eq(terminal).and(r.ISO8601(draw('opening')('timestamp')).lt(r.ISO8601(timestamp)))
     }).run(connection)
     // console.log('tryPrevDraw', drawer.next())
   }
@@ -60,8 +61,8 @@ async function getNextDrawerByTerminal (terminal, timestamp) {
   console.log('modelGetNextDraw')
   try {
     connection = await r.connect(dbConfig)
-    drawer = await r.table('drawers').filter(function(draw) {
-      return draw('terminal').eq(terminal).and(r.ISO8601(draw('opening')('timestamp')).gt(r.ISO8601(timestamp))
+    drawer = await r.table('drawers').orderBy(r.row('opening')('timestamp')).filter(function(draw) {
+      return draw('terminal').eq(terminal).and(r.ISO8601(draw('opening')('timestamp')).gt(r.ISO8601(timestamp)))
     }).run(connection)
   }
   catch (err) {

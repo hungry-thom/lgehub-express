@@ -12,6 +12,10 @@ module.exports = {
   navigateDrawer
 }
 
+function localTimeOffset () {
+  return new Date() - 21600000
+}
+
 async function getActiveDrawerByTerminal (terminal) {
   console.log('servGetDrawer', terminal)
   // transactions will be returned as array
@@ -28,7 +32,7 @@ async function setOpening (drawer) {
     // no currently active drawer found, we can now activae new drawer
     console.log('no actie terminal ready to open', activeTerminalDrawer.length)
     drawer.status = 'active'
-    drawer.opening.timestamp = new Date().toISOString()
+    drawer.opening.timestamp = new Date(localTimeOffset()).toISOString()
     console.log('check', drawer)
     let openDrawer = await model.setOpeningByDrawer(drawer)
     console.log('serviceOPenDrawerResp', openDrawer)
@@ -46,7 +50,9 @@ async function setOpening (drawer) {
 
 async function navigateDrawer(terminal, timestamp, nav) {
   let drawer
-  let t = new Date(timestamp)
+  if (timestamp === 'null') {
+    timestamp = new Date(localTimeOffset()).toISOString()
+  }
   if (nav === 'prev') {
     console.log('serviceGetPrevDrawer')
     drawer = await model.getPrevDrawerByTerminal(terminal, timestamp)
@@ -79,7 +85,7 @@ async function setClosing (drawer) {
   } else {
     // active drawer found. may want to check for opening timestamp
     drawer.status = 'closed'
-    drawer.closing.timestamp = new Date().toISOString()
+    drawer.closing.timestamp = new Date(localTimeOffset()).toISOString()
     let closedDrawer = await model.setClosingByDrawer(drawer)
     console.log('Draw Service set closeDraw resp', closedDrawer)
     if (closedDrawer.replaced === 1) {
