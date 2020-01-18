@@ -9,11 +9,19 @@ module.exports = {
   getActiveDrawerByTerminal,
   setOpening,
   setClosing,
-  navigateDrawer
+  navigateDrawer,
+  listDrawers
 }
 
 function localTimeOffset () {
   return new Date() - 21600000
+}
+
+async function listDrawers (startRow, endRow) {
+  console.log('serviceListDrawer', startRow, endRow)
+  let drawerList = await model.getDrawerList(Number(startRow), Number(endRow))
+  console.log('serviceListDrawerResp', drawerList)
+  return drawerList
 }
 
 async function getActiveDrawerByTerminal (terminal) {

@@ -10,6 +10,7 @@ router.post('/opening', authorize(), openDrawer);
 router.post('/closing', authorize(), closeDrawer);
 router.get('/:terminal/', authorize(), getActiveDrawerByTerminal);
 router.get('/:terminal/:timestamp/:navigate/', authorize(), navigateDrawer);
+router.get('/:terminal/list/', authorize(), test);
 module.exports = router;
 
 function openDrawer (req, res, next) {
@@ -31,8 +32,17 @@ function closeDrawer (req, res, next) {
 
 function getActiveDrawerByTerminal (req, res, next) {
   console.log('reqGetDrawer', req.params)
+  console.log('test', req.query)
   drawerService.getActiveDrawerByTerminal(req.params.terminal)
   .then(drawer => res.json(drawer))
+  .catch(err => next(err));
+}
+
+function test (req, res, next) {
+  console.log('testParams', req.params)
+  console.log('testQ', req.query)
+  drawerService.listDrawers(req.query.startRow, req.query.endRow)
+  .then(drawerList => res.json(drawerList))
   .catch(err => next(err));
 }
 
