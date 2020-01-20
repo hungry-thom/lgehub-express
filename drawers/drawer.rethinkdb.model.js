@@ -7,7 +7,8 @@ module.exports = {
   setClosingByDrawer,
   getPrevDrawerByTerminal,
   getNextDrawerByTerminal,
-  getDrawerList
+  getDrawerList,
+  getDrawerListCount
 }
 
 const hostConf = '192.168.100.102'
@@ -51,6 +52,20 @@ async function getDrawerList (startRow, endRow) {
   }
   connection && connection.close()
   return drawerList.toArray()
+}
+
+async function getDrawerListCount (terminal) {
+  let connection, count
+  console.log('modelGetDrawerListCount')
+  try {
+    connection = await r.connect(dbConfig)
+    count = await r.table('drawers').filter(r.row('terminal').eq(terminal)).count().run(connection)
+  }
+  catch (err) {
+    console.log('modelGetDrawerListCountError', err)
+  }
+  connection && connection.close()
+  return count
 }
 
 async function getPrevDrawerByTerminal (terminal, timestamp) {

@@ -11,6 +11,7 @@ router.post('/closing', authorize(), closeDrawer);
 router.get('/:terminal/', authorize(), getActiveDrawerByTerminal);
 router.get('/:terminal/:timestamp/:navigate/', authorize(), navigateDrawer);
 router.get('/:terminal/list/', authorize(), test);
+router.get('/:terminal/count/', authorize(), getDrawerListCount);
 module.exports = router;
 
 function openDrawer (req, res, next) {
@@ -43,6 +44,13 @@ function test (req, res, next) {
   console.log('testQ', req.query)
   drawerService.listDrawers(req.query.startRow, req.query.endRow)
   .then(drawerList => res.json(drawerList))
+  .catch(err => next(err));
+}
+
+function getDrawerListCount (req, res, next) {
+  console.log('controllerGetDrawerListCount', req.params.terminal)
+  drawerService.getDrawerListCount(req.params.terminal)
+  .then(count => res.json(count))
   .catch(err => next(err));
 }
 

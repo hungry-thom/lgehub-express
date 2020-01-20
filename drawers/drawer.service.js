@@ -10,7 +10,8 @@ module.exports = {
   setOpening,
   setClosing,
   navigateDrawer,
-  listDrawers
+  listDrawers,
+  getDrawerListCount
 }
 
 function localTimeOffset () {
@@ -19,9 +20,17 @@ function localTimeOffset () {
 
 async function listDrawers (startRow, endRow) {
   console.log('serviceListDrawer', startRow, endRow)
+  // is it better to have separat 
   let drawerList = await model.getDrawerList(Number(startRow), Number(endRow))
   console.log('serviceListDrawerResp', drawerList)
   return drawerList
+}
+
+async function getDrawerListCount (terminal) {
+  console.log('serviceGerDrawerListCount', terminal)
+  let count = await model.getDrawerListCount(terminal)
+  console.log('servieGetDrawerListCount Response', count)
+  return count
 }
 
 async function getActiveDrawerByTerminal (terminal) {
