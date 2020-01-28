@@ -1,27 +1,39 @@
 const express = require('express');
 const router = express.Router();
 const transactionService = require('./transaction.service.js');
-const authorize = require('../_helpers/authorize');
-const Role = require('../_helpers/role');
+const authorize = require('../_helpers/authorize')
+const Role = require('../_helpers/role')
 
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
-router.get('/income/:startDate.:endDate', authorize(), incomeByDates);
-router.get('/items/', authorize(), getAllItems);
-module.exports = router;
+router.get('/income/:startDate.:endDate', authorize(), incomeByDates) // old
+router.get('/items/', authorize(), getAllItems) //old
+router.post('/expense/new', authorize(), newExpense)
+module.exports = router
 
+function newExpense (req, res, next) {
+  console.log('controllerNewExpense')
+  transactionService.postNewExpense(req.body)
+    .then(newExpenseResponse => {
+      console.log('newExpenseResponse', newExpenseResponse)
+    })
+    .catch(err => next(err))
+}
+
+//old
 function incomeByDates (req, res, next) {
   console.log('req')
   transactionService.incomeByDates(req.params.startDate, req.params.endDate)
     .then(transactions => res.json(transactions))
-    .catch(err => next(err));
+    .catch(err => next(err))
 }
 
+//old
 function getAllItems (req, res, next) {
   console.log('reqAllItems')
   transactionService.getAllItems()
   .then(items => res.json(items))
-  .catch(err => next(err));
+  .catch(err => next(err))
 }
 
 /*

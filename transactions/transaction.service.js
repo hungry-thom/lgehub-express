@@ -7,7 +7,15 @@ const _ = require('lodash')
 
 module.exports = {
   incomeByDates,
-  getAllItems
+  getAllItems,
+  postNewExpense
+}
+
+async function postNewExpense (body) {
+  console.log('servicePostNewExperience')
+  let newExpenseResp = await model.postNewExpense(body)
+  console.log('serviceNewExpenseResp', newExpenseResp)
+  return newExpenseResp
 }
 
 async function incomeByDates (startDate, endDate) {
