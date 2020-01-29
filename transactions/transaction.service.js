@@ -8,7 +8,19 @@ const _ = require('lodash')
 module.exports = {
   incomeByDates,
   getAllItems,
-  postNewExpense
+  postNewExpense,
+  listExpenses,
+}
+
+async function listExpenses (startDate, endDate) {
+  console.log('---listExpenses')
+  if (endDate === 'null') {
+    endDate = new Date().toISOString()
+  }
+  console.log(startDate, endDate)
+  let expenseList = await model.listExpenses(startDate, endDate)
+  console.log('---listExpenseResp', expenseList)
+  return expenseList
 }
 
 async function postNewExpense (body) {

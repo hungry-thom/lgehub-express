@@ -3,7 +3,8 @@ const r = require('rethinkdb')
 module.exports = {
   incomeByDates,
   getAllItems,
-  postNewExpense
+  postNewExpense,
+  listExpenses
 }
 
 const hostConf = '192.168.100.102'
@@ -12,6 +13,18 @@ const dbConfig = {
   host: hostConf,
   port: 28015,
   db: 'test'
+}
+
+async function listExpenses (startDate, endDate) {
+  let connection, expenseList
+  try {
+    connection = await r.connect(dbConfig)
+    expenseList = await r.table('trans').orderBy(r.desc(r.row('transactionDate'))).filter(r.ISO8601(r.row('transactionDate')).le(r.ISO8601(endDate)).and(r.ISO8601(r.row('transactionDate')).ge(r.ISO8601(startDate)))).run(connection)
+  } catch (err) {
+    console.log(err)
+  }
+  connection && connection.close()
+  return expenseList.toArray()
 }
 
 async function postNewExpense (transaction) {

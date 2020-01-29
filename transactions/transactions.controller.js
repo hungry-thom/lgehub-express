@@ -7,6 +7,7 @@ const Role = require('../_helpers/role')
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
 router.get('/income/:startDate.:endDate', authorize(), incomeByDates) // old
+router.get('/expense/list/', authorize(), listExpenses)
 router.get('/items/', authorize(), getAllItems) //old
 router.post('/expense/new', authorize(), newExpense)
 module.exports = router
@@ -16,6 +17,7 @@ function newExpense (req, res, next) {
   transactionService.postNewExpense(req.body)
     .then(newExpenseResponse => {
       console.log('newExpenseResponse', newExpenseResponse)
+      res.json(newExpenseResponse)
     })
     .catch(err => next(err))
 }
@@ -34,6 +36,16 @@ function getAllItems (req, res, next) {
   transactionService.getAllItems()
   .then(items => res.json(items))
   .catch(err => next(err))
+}
+
+function listExpenses (req, res, next) {
+  console.log('--------start-----', req.query)
+  transactionService.listExpenses (req.query.startDate, req.query.endDate)
+  .then(resp => {
+    console.log('------end------', resp)
+    res.json(resp)
+  })
+  .catch(err => console.log(err))
 }
 
 /*
