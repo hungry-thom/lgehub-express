@@ -6,18 +6,34 @@ const model = require('./inventory.rethinkdb.model.js')
 // const _ = require('lodash')
 
 module.exports = {
-  getItems
+  getItemNames,
+  getItem,
+  getAllItems
 }
 
 function localTimeOffset () {
   return new Date() - 21600000
 }
 
-async function getItems () {
+async function getAllItems () {
+  console.log('====getAllItems')
+  let itemObjList = await model.getAllItems()
+  console.log('====itemObjList')
+  return itemObjList
+}
+
+async function getItem (item) {
+  console.log('====getItem', item)
+  let itemResp = await model.getItem(item)
+  console.log('====itemResp', itemResp)
+  return itemResp
+}
+
+async function getItemNames () {
   // todo: use limit for search, maybe 2 years?
   console.log('=====getItems')
-  let itemList = await model.getItems()
-  console.log('=====itemList')
+  let itemList = await model.getItemNames()
+  console.log('=====itemList', itemList)
   return itemList
 }
 

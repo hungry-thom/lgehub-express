@@ -4,7 +4,8 @@ module.exports = {
   incomeByDates,
   getAllItems,
   postNewExpense,
-  listExpenses
+  listExpenses,
+  getVendorList
 }
 
 const hostConf = '192.168.100.102'
@@ -13,6 +14,19 @@ const dbConfig = {
   host: hostConf,
   port: 28015,
   db: 'test'
+}
+
+async function getVendorList (type) {
+  console.log('++++getVendorList')
+  let connection, vendorList
+  try {
+    connection = await r.connect(dbConfig)
+    vendorList = await r.table('trans').filter(r.row('transactionType').eq(type)).distinct().pluck('vendor').run(connection)
+  } catch (err) {
+    console.log('++++getVendorlistError', err)
+  }
+  connection && connection.close()
+  return vendorList.toArray()
 }
 
 async function listExpenses (startDate, endDate) {

@@ -10,7 +10,15 @@ module.exports = {
   getAllItems,
   postNewExpense,
   listExpenses,
-  listAll
+  listAll,
+  getVendorList
+}
+
+async function getVendorList (type) {
+  console.log('=====getVendorList')
+  let vendorList = await model.getVendorList(type)
+  console.log('=====getVendorListRest')
+  return vendorList
 }
 
 async function listAll (startDate, endDate) {

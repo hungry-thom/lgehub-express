@@ -8,17 +8,42 @@ const Role = require('../_helpers/role');
 // router.get('/', authorize(Role.Admin), getAll); // admin only
 // router.post('/closing', authorize(), closeDrawer);
 // router.get('/:terminal/', authorize(), getActiveDrawerByTerminal);
-router.get('/getitems/', authorize(), getItems);
+router.get('/getitemnames/', authorize(), getItemNames);
+router.get('/getitem/:item', authorize(), getItem);
+router.get('/getallitems/', authorize(), getAllItems);
 module.exports = router;
 
-function getItems (req, res, next) {
+function getAllItems (req, res, next) {
+  console.log('----getAllItems')
+  inventoryService.getAllItems()
+  .then(itemObjList => {
+    console.log('----itemObjList')
+    res.json(itemObjList)
+  }).catch(err => {
+    console.log('----itemObjListError', err)
+  })
+}
+
+function getItemNames (req, res, next) {
   console.log('----getItems-----');
-  inventoryService.getItems()
+  inventoryService.getItemNames()
   .then(itemList => {
     console.log('---itemList')
     res.json(itemList)
   }). catch(err => {
     console.log('---itemListError')
+    next(err)
+  })
+}
+
+function getItem (req, res, next) {
+  console.log('----getItem-----')
+  inventoryService.getItem(req.params.item)
+  .then(item => {
+    console.log('---item')
+    res.json(item)
+  }).catch(err => {
+    console.log('---getItemError', err)
     next(err)
   })
 }

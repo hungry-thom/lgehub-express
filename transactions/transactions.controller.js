@@ -10,6 +10,7 @@ router.get('/income/:startDate.:endDate', authorize(), incomeByDates) // old
 router.get('/expense/list/', authorize(), listExpenses)
 router.get('/listall/', authorize(), listAll)
 router.get('/items/', authorize(), getAllItems) //old
+router.get('/vendorlist/:type', authorize(), getVendorList)
 router.post('/expense/new', authorize(), newExpense)
 module.exports = router
 
@@ -20,6 +21,15 @@ function listAll (req, res, next) {
     res.json(resp)
   })
   .catch(err => console.log(err))
+}
+
+function getVendorList (req, res, next) {
+  console.log('------getVendorList')
+  transactionService.getVendorList (req.params.type)
+  .then(vendorList => {
+    console.log('----vendorListResp')
+    res.json(vendorList)
+  }).catch(err => console.log('----vendorListError', err))
 }
 
 function newExpense (req, res, next) {

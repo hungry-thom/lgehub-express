@@ -1,7 +1,9 @@
 const r = require('rethinkdb')
 
 module.exports = {
-  getItems
+  getItemNames,
+  getItem,
+  getAllItems
 }
 
 const hostConf = '192.168.100.102'
@@ -12,7 +14,44 @@ const dbConfig = {
   db: 'test'
 }
 
-async function getItems () {
+async function getAllItems () {
+  let connection, itemObjList
+  console.log('++++getAllItems')
+  try {
+    connection = await r.connect(dbConfig)
+    itemObjList = await r.table('trans').concatMap(function (trans) {
+      return trans('transactionType').eq('expense').and(trans('transItems').filter(function (items) {
+        return items
+      }))
+    }).run(connection)
+  }
+  catch (err) {
+    console.log('++++itemObjListError', err)
+  }
+  connection && connection.close()
+  return itemObjList.toArray()
+}
+
+async function getItem (item) {
+  let connection, itemResp
+  console.log('++++itemResp', item)
+  try {
+    connection = await r.connect(dbConfig)
+    itemResp = await r.table('trans').concatMap(function (trans) {
+      return trans('transactionType').eq('expense').and(trans('transItems').filter(function (items) {
+        return items('item').eq(item)
+      }))
+    }).run(connection)
+  }
+  catch (err) {
+    console.log('++++++itemError', err)
+  }
+  connection && connection.close()
+  console.log(itemResp)
+  return itemResp.toArray()
+}
+
+async function getItemNames () {
   let connection, itemList
   console.log('+++++getItems')
   try {
@@ -21,7 +60,7 @@ async function getItems () {
       return trans('transactionType').eq('expense').and(trans('transItems').filter(function (items) {
         return items
       }))
-    }).run(connection)
+    }).pluck('item').run(connection)
   }
   catch (err) {
     console.log('++++++itemListError')
