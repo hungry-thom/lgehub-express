@@ -11,7 +11,15 @@ module.exports = {
   postNewExpense,
   listExpenses,
   listAll,
-  getVendorList
+  getVendorList,
+  getById
+}
+
+async function getById (id) {
+  console.log('====getById')
+  let transaction = await model.getById(id)
+  console.log('====getByIdResp', transaction)
+  return transaction
 }
 
 async function getVendorList (type) {

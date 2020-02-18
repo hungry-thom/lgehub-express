@@ -5,7 +5,8 @@ module.exports = {
   getAllItems,
   postNewExpense,
   listExpenses,
-  getVendorList
+  getVendorList,
+  getById
 }
 
 const hostConf = '192.168.100.102'
@@ -16,12 +17,26 @@ const dbConfig = {
   db: 'test'
 }
 
+async function getById (id) {
+  console.log('++++getById', id)
+  let connection, transaction
+  try {
+    connection = await r.connect(dbConfig)
+    transaction = await r.table('trans').get(id).run(connection)
+  } catch (err) {
+    console.log('++++getByIdError', err)
+  }
+  connection && connection.close()
+  console.log('resp', transaction)
+  return transaction
+}
+
 async function getVendorList (type) {
   console.log('++++getVendorList')
   let connection, vendorList
   try {
     connection = await r.connect(dbConfig)
-    vendorList = await r.table('trans').filter(r.row('transactionType').eq(type)).distinct().pluck('vendor').run(connection)
+    vendorList = await r.table('trans').filter(r.row('transactionType').eq(type)).pluck('vendor').distinct().run(connection)
   } catch (err) {
     console.log('++++getVendorlistError', err)
   }
@@ -45,7 +60,7 @@ async function postNewExpense (transaction) {
   let connection, result
   try {
     connection = await r.connect(dbConfig)
-    result = await r.table('trans').insert(transaction).run(connection)
+    result = await r.table('trans').insert(transaction, { conflict: 'replace' }).run(connection)
   }
   catch (err) {
     console.log(err)

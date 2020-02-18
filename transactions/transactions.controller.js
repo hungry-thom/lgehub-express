@@ -11,8 +11,19 @@ router.get('/expense/list/', authorize(), listExpenses)
 router.get('/listall/', authorize(), listAll)
 router.get('/items/', authorize(), getAllItems) //old
 router.get('/vendorlist/:type', authorize(), getVendorList)
+router.get('/id/:id', authorize(), getById)
 router.post('/expense/new', authorize(), newExpense)
 module.exports = router
+
+function getById (req, res, next) {
+  console.log('------transactionById')
+  transactionService.getById (req.params.id)
+  .then(transaction => {
+    console.log('-----transactionById')
+    res.json(transaction)
+  })
+  .catch(err => console.log('----transactionByIdError', err))
+}
 
 function listAll (req, res, next) {
   transactionService.listAll (req.query.startDate, req.query.endDate)
