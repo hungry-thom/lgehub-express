@@ -35,7 +35,7 @@ async function getEmployeeList () {
   try {
     console.log('+++getEmpList');
     connection = await r.connect(dbConfig);
-    employeeList = await r.table('Employees').run(connection);
+    employeeList = await r.table('Employees').orderBy({ index: 'startDate' }).run(connection);
   }
   catch (err) {
     console.log('getEmpListErr', err);

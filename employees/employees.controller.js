@@ -7,8 +7,18 @@ const Role = require('../_helpers/role');
 // routes
 router.post('/', authorize(), newEmployee); // public route
 router.get('/', authorize(), getEmployeeList);
+router.get('/list/schedule/', authorize(), employeeListForSchedule);
 // router.get('/', authorize(), getAll); // admin only use -> authorize(Role.Admin)
 module.exports = router;
+
+function employeeListForSchedule (req, res, next) {
+  console.log('---empL4Sch')
+  employeeService.employeeListForSchedule()
+  .then(empList => {
+    res.json(empList)
+  })
+  .catch(err => console.log(err))
+}
 
 function newEmployee (req, res, next) {
   console.log('body', req.body);
