@@ -7,7 +7,8 @@ const Role = require('../_helpers/role')
 // routes
 // router.get('/', authorize(Role.Admin), getAll); // admin only
 router.get('/income/:startDate.:endDate', authorize(), incomeByDates) // old
-router.get('/expense/list/', authorize(), listExpenses)
+// router.get('/expense/list/', authorize(), listExpenses)
+router.get('/expense/list/', authorize(), listAll)
 router.get('/listall/', authorize(), listAll)
 router.get('/items/', authorize(), getAllItems) //old
 router.get('/vendorlist/:type', authorize(), getVendorList)

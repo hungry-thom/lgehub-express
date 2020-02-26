@@ -16,6 +16,8 @@ app.use('/transactions', require('./transactions/transactions.controller'));
 app.use('/drawers', require('./drawers/drawers.controller'));
 app.use('/inventory', require('./inventory/inventory.controller'));
 app.use('/employees', require('./employees/employees.controller'));
+app.use('/customers', require('./customers/customers.controller'));
+app.use('/deliveries', require('./deliveries/deliveries.controller'));
 
 // global error handler
 app.use(errorHandler);
