@@ -1,7 +1,7 @@
 const r = require('rethinkdb');
 
 module.exports = {
-//  newEmployee,
+  saveDelivery,
   getDeliveryList
 };
 
@@ -25,6 +25,20 @@ async function getDeliveryList (date) {
   }
   connection && connection.close()
   return deliveryList.toArray();
+}
+
+async function saveDelivery (delivery) {
+  let connection, deliveryResp
+  try {
+    console.log('+++saveDelivery')
+    connection = await r.connect(dbConfig)
+    deliveryResp = await r.table('Deliveries').insert(delivery, { conflict: 'replace' }).run(connection)
+  }
+  catch (err) {
+    console.log('++saveDeliveryError', err)
+  }
+  connection && connection.close()
+  return deliveryResp
 }
 
 /*
