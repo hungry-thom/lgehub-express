@@ -8,11 +8,45 @@ const model = require('./inventory.rethinkdb.model.js')
 module.exports = {
   getItemNames,
   getItem,
-  getAllItems
+  getAllItems,
+  getInventory,
+  getTagList
 }
 
 function localTimeOffset () {
   return new Date() - 21600000
+}
+
+async function getInventory (inv) { // currently unused
+  console.log('====getInventory')
+  let inventoryList = await model.getAllItems()
+  let i = 0
+  let itemList = []
+  let tagList = []
+  while (i < inventoryList.length) {
+    if (!itemList.includes(inventoryList[i].item)) itemList.push(inventoryList[i].item)
+    if (inventoryList[i].tags) tagList.push(...inventoryList[i].tags)
+    // console.log('/////gotItems', i, itemList, tagList)
+    i++
+  }
+  let uniqueTagList = [...new Set(tagList)]
+  console.log('====itemInventoryList')
+  return { 'items': itemList, 'tags': uniqueTagList }
+}
+
+async function getTagList () {
+  console.log('====getTagList')
+  let inventoryList = await model.getAllItems()
+  let i = 0
+  let tagList = []
+  while (i < inventoryList.length) {
+    if (inventoryList[i].tags) tagList.push(...inventoryList[i].tags)
+    // console.log('/////gotItems', i, itemList, tagList)
+    i++
+  }
+  let uniqueTagList = [...new Set(tagList)]
+  console.log('====itemInventoryList')
+  return uniqueTagList
 }
 
 async function getAllItems () {

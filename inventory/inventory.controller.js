@@ -11,7 +11,31 @@ const Role = require('../_helpers/role');
 router.get('/getitemnames/', authorize(), getItemNames);
 router.get('/getitem/:item', authorize(), getItem);
 router.get('/getallitems/', authorize(), getAllItems);
+router.get('/getinventory/:inv', authorize(), getInventory);
+router.get('/gettaglist/', authorize(), getTagList);
 module.exports = router;
+
+function getTagList (req, res, next) {
+  console.log('---controlGetTagList')
+  inventoryService.getTagList()
+  .then(tagList => {
+    console.log('---controlReturnTagList')
+    res.json(tagList)
+  }).catch(err => {
+    console.log('---controlTagListError', err)
+  })
+}
+
+function getInventory (req, res, next) {
+  console.log('----getInventory')
+  inventoryService.getInventory(req.params.inv)
+  .then(inventoryList => {
+    console.log('----inventoryList')
+    res.json(inventoryList)
+  }).catch(err => {
+    console.log('----inventoryListError', err)
+  })
+}
 
 function getAllItems (req, res, next) {
   console.log('----getAllItems')

@@ -2,7 +2,8 @@ const r = require('rethinkdb');
 
 module.exports = {
   saveDelivery,
-  getDeliveryList
+  getDeliveryList,
+  getDeliveryDates
 };
 
 const hostConf = '192.168.100.102'
@@ -11,6 +12,22 @@ const dbConfig = {
   host: hostConf,
   port: 28015,
   db: 'test'
+}
+
+async function getDeliveryDates () {
+  let connection, deliveryDates
+  try {
+    console.log('++getDeliveryDates')
+    connection = await r.connect(dbConfig)
+    deliveryDates = await r.table('Deliveries').orderBy(r.desc(r.row('deliveryDate'))).map(function (delivery) {
+      return delivery('deliveryDate')
+    }).run(connection)
+  }
+  catch (err) {
+    console.log('++getDeliveryDatesError'. err)
+  }
+  connection && connection.close()
+  return deliveryDates
 }
 
 async function getDeliveryList (date) {
