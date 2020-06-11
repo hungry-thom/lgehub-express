@@ -1,8 +1,8 @@
 const r = require('rethinkdb');
 
 module.exports = {
-  newEmployee,
-  getEmployeeList
+//  newEmployee,
+//  getEmployeeList
 };
 
 const hostConf = '192.168.100.102'
@@ -13,6 +13,7 @@ const dbConfig = {
   db: 'test'
 }
 
+/*
 async function newEmployee (details) {
   let connection, resp;
   try {
@@ -20,7 +21,6 @@ async function newEmployee (details) {
     connection = await r.connect(dbConfig);
     // todo: separate method for updating record
     resp = await r.table('Employees').insert(details, { conflict: 'replace' }).run(connection);
-    // user resturns cursor // console.log('in model', user);
   }
   catch (err) {
     console.log('++++newEmployeeError', err);
@@ -43,16 +43,4 @@ async function getEmployeeList () {
   connection && connection.close()
   return employeeList.toArray();
 }
-
-async function getById (id) {
-  let connection, user;
-  try {
-    connection = await r.connect(dbConfig);
-    user = await r.table('Users').filter(r.row('id').eq(id)).run(connection);
-  }
-  catch (err) {
-    console.log(err);
-  }
-  connection && connection.close()
-  return user.next();
-}
+*/
