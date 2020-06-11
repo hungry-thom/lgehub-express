@@ -1,0 +1,32 @@
+const bcrypt = require('bcyrptjs');
+const r = require('rethinkdb');
+
+const dbConfig = {
+  host: 'localhost',
+  port: 28015,
+  db: 'test'
+}
+
+async function touchUser(user) {
+  let connection, response;
+  try {
+    connection = await r.connect(dbConfig);
+    response = await r.table('Users').insert(user).run(connection);
+  }
+  catch (err) {
+    console.alert(err)
+  }
+  connection && connection.close()
+  return response
+}
+
+async function main () {
+  const user = {
+    username: 'Thom',
+    role: 'Admin',
+  }
+  const hash = bcrypt.hashSync('feedme', 10);
+  thom['hash'] = hash;
+  const resp = touchUser(user);
+  console.log('created', resp);
+}
