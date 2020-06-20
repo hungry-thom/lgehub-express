@@ -20,6 +20,7 @@ app.use('/customers', require('./endpoints/customers/customers.controller'));
 app.use('/deliveries', require('./endpoints/deliveries/deliveries.controller'));
 app.use('/expenses', require('./endpoints/expenses/expenses.controller'));
 app.use('/vendors', require('./endpoints/vendors/vendors.controller'));
+app.use('/reports', require('./endpoints/reports/reports.controller'));
 
 // global error handler
 app.use(errorHandler);
