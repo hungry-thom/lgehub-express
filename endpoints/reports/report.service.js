@@ -13,7 +13,8 @@ async function  getRevenue (startDate, endDate) {
   eDate = eDate.setUTCHours(23,59,59,999)
   let ed = new Date(eDate)
   console.log('dates', sDate, ed)
-  const resp = await model.getRevenue(sDate.toISOString(), ed.toISOString());
+  const resp = await model.getRevenueBasic(sDate.toISOString(), ed.toISOString());
+  // const resp = await model.getRevenue(sDate.toISOString(), ed.toISOString());
   return resp
 }
 
