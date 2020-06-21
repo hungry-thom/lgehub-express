@@ -1,14 +1,16 @@
 const r = require('rethinkdb');
+const config = require('../../ngrok.json')
+const HOST = config.host
 
 module.exports = {
 //  newEmployee,
   getRevenue
 };
 
-const hostConf = '192.168.100.102'
+// const hostConf = '192.168.100.102'
 // const hostConf = 'localhost'
 const dbConfig = {
-  host: hostConf,
+  host: HOST,
   port: 28015,
   db: 'koox'
 }
@@ -28,11 +30,11 @@ async function getRevenue(startDate, endDate) {
     }).sum('amount').run(connection)
   }
   catch (err) {
-    consolelog('getRevenueError', err)
+    console.log('getRevenueError', err)
   }
   connection && connection.close()
 
-  return result
+  return resp
 }
 
 /*

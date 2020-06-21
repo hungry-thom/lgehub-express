@@ -6,7 +6,14 @@ module.exports = {
 };
 
 async function  getRevenue (startDate, endDate) {
-  const resp = await model.getRevenue(startDate, endDate);
+  let sDate = new Date(startDate)
+  // sDate = sDate.setHours(0,0,0,0)
+  // sDate = sDate.toISOString()
+  let eDate = new Date(endDate)
+  eDate = eDate.setUTCHours(23,59,59,999)
+  let ed = new Date(eDate)
+  console.log('dates', sDate, ed)
+  const resp = await model.getRevenue(sDate.toISOString(), ed.toISOString());
   return resp
 }
 

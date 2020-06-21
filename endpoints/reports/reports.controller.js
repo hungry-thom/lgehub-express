@@ -8,7 +8,7 @@ const reportService = require('./report.service');
 // router.post('/', authorize(), newEmployee); // public route
 // router.get('/', authorize(), getEmployeeList);
 // router.get('/', authorize(), getAll); // admin only use -> authorize(Role.Admin)
-router.get('/', authorize(), getRevenue);
+router.get('/getrevenue', authorize(), getRevenue);
 module.exports = router;
 
 function getRevenue (req, res, next) {
