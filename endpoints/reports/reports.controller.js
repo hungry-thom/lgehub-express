@@ -9,7 +9,18 @@ const reportService = require('./report.service');
 // router.get('/', authorize(), getEmployeeList);
 // router.get('/', authorize(), getAll); // admin only use -> authorize(Role.Admin)
 router.get('/getrevenue', authorize(), getRevenue);
+router.get('/getpandl', authorize(), getPandL);
 module.exports = router;
+
+function getPandL (req, res, next) {
+  reportService.getPandL(req.query.startDate, req.query.endDate)
+  .then(resp => {
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('getPandLError', err)
+  })
+}
 
 function getRevenue (req, res, next) {
   reportService.getRevenue(req.query.startDate, req.query.endDate)

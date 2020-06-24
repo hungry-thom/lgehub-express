@@ -5,7 +5,7 @@ const HOST = config.host
 module.exports = {
 //  newEmployee,
   getRevenue,
-  getRevenueBasic
+  getTransactions
 };
 
 // const hostConf = '192.168.100.102'
@@ -17,12 +17,14 @@ const dbConfig = {
   // timeout: 120
 }
 
-async function getRevenueBasic(startDate, endDate) {
+async function getTransactions (startDate, endDate) {
   let connection, resp
   try {
     connection = await r.connect(dbConfig)
     resp = await r.table('Transactions').filter(function(exp) {
       return r.ISO8601(exp('transactionDate')).ge(r.ISO8601(startDate)).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601(endDate)))
+    }).concatMap(function (item) {
+      return item('transactionItems')
     }).run(connection)
   }
   catch (err) {
