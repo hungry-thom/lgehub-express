@@ -15,7 +15,8 @@ async function  getPandL (startDate, endDate) {
   let dex = 0
   let locationList = []
   let month = {}
-  month['col'] = sDate.toLocaleString('en-EN', { month: 'short', year: 'numeric' }).split(' ').join('')
+  let monthYear = sDate.toUTCString().split(' ')
+  month['col'] = `${monthYear[2]}${monthYear[3]}`
   month['revenue'] = { 'restaurant': 0, 'meatshop': 0, 'farm': 0, 'revTotal': 0 }
   month['COGS'] = { 'restaurant': 0, 'meatshop': 0, 'farm': 0, 'lge': 0, 'subTotal': 0, 'cogsRatio': 0 }
   month['opExp'] = { 'restaurant': 0, 'meatshop': 0, 'farm': 0, 'lge': 0, 'subTotal': 0, 'opExpRatio': 0 }
