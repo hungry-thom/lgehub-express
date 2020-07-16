@@ -3,9 +3,12 @@ const model = require('./report.rethinkdb.model.js');
 module.exports = {
 //  newEmployee
   getRevenue,
-  getPandL
+  getPandL,
+  getMonthly
 };
 
+async function getMonthly(acct, query) {
+}
 
 async function  getPandL (startDate, endDate) {
   let sDate = new Date(startDate) // new Date setsHours(0,0,0,0)

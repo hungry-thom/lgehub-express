@@ -10,7 +10,19 @@ const reportService = require('./report.service');
 // router.get('/', authorize(), getAll); // admin only use -> authorize(Role.Admin)
 router.get('/getrevenue', authorize(), getRevenue);
 router.get('/getpandl', authorize(), getPandL);
+router.get('/monthly/:acct', authorize(), getMonthly);
 module.exports = router;
+
+function getMonthly (req, res, next) {
+  reportService.getMonthly(req.params.acct, req.query)
+  .then(resp => {
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('getMonthlyError', err)
+    res.json(err)
+  })
+}
 
 function getPandL (req, res, next) {
   reportService.getPandL(req.query.startDate, req.query.endDate)
