@@ -1,4 +1,6 @@
 const r = require('rethinkdb');
+const config = require('../../config.json')
+const HOST = config.host
 
 module.exports = {
   newCustomer,
@@ -6,10 +8,9 @@ module.exports = {
   getDeliveryList
 };
 
-const hostConf = '192.168.100.102'
 // const hostConf = 'localhost'
 const dbConfig = {
-  host: hostConf,
+  host: HOST,
   port: 28015,
   db: 'test'
 }

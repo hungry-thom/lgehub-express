@@ -1,4 +1,5 @@
 {
   "port": 3001,
-  "secret": "sssshhhhh"
+  "secret": "sssshhhhh",
+  "host": "192.168.0.102"
 }
