@@ -8,6 +8,27 @@ module.exports = {
 };
 
 async function getMonthly(acct, query) {
+  console.log('getMonthly', acct, query)
+  let itemList = []
+  let transactions = await model.getRevenueType(query.startDate, query.endDate)
+  let dex = 0
+  while (dex < transactions.length) {
+    let transaction  = transactions[dex]
+    let itemIndex = itemList.findIndex(i => i.item === transaction.item)
+    if (itemIndex < 0) {
+      let newItem = {
+        item: transaction.item,
+        totalCost: transaction.cost,
+        totalQty: transaction.qty || 1
+      }
+      itemList.push(newItem)
+    } else {
+      itemList[itemIndex].totalCost += transaction.cost
+      itemList[itemIndex].totalQty += transaction.qty || 1
+    }
+    dex++
+  }
+  return itemList
 }
 
 async function  getPandL (startDate, endDate) {

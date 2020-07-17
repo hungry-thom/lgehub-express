@@ -4,8 +4,9 @@ const HOST = config.host
 
 module.exports = {
 //  newEmployee,
-  getRevenue,
-  getTransactions
+  getTransactions,
+  getRevenueType,
+  getRevenueAccount
 };
 
 // const hostConf = '192.168.100.102'
@@ -35,7 +36,25 @@ async function getTransactions (startDate, endDate) {
   return resp.toArray()
 }
 
-async function getRevenue(startDate, endDate) {
+async function getRevenueType(startDate, endDate) {
+  let connection, resp
+  try {
+    connection = await r.connect(dbConfig)
+    resp = await r.table('Transactions').filter(function(exp) {
+      return r.ISO8601(exp('transactionDate')).ge(r.ISO8601(startDate)).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601(endDate))).and(exp('transactionType').eq('revenue'))
+    }).concatMap(function (item) {
+      return item('transactionItems')
+    }).run(connection)
+  }
+  catch (err) {
+    console.log('getRevenueError', err)
+  }
+  // connection && connection.close()
+
+  return resp.toArray()
+}
+
+async function getRevenueAccount(startDate, endDate) {
   let connection, resp
   try {
     connection = await r.connect(dbConfig)

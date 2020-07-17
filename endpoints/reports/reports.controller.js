@@ -14,14 +14,19 @@ router.get('/monthly/:acct', authorize(), getMonthly);
 module.exports = router;
 
 function getMonthly (req, res, next) {
+  // console.log('rec', req.params, req.query)
   reportService.getMonthly(req.params.acct, req.query)
   .then(resp => {
+    // console.log('resp', resp)
     res.json(resp)
   })
   .catch(err => {
     console.log('getMonthlyError', err)
-    res.json(err)
+    // res.json(err)
   })
+  /*
+  res.json({ 'acct': req.params.acct, 'startDate': req.query.startDate, 'endDate': req.query.endDate, 'cat': req.query.cat })
+  */
 }
 
 function getPandL (req, res, next) {
