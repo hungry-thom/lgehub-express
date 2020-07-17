@@ -11,7 +11,21 @@ const reportService = require('./report.service');
 router.get('/getrevenue', authorize(), getRevenue);
 router.get('/getpandl', authorize(), getPandL);
 router.get('/monthly/:acct', authorize(), getMonthly);
+router.get('/daily/', authorize(), getDaily);
 module.exports = router;
+
+function getDaily (req, res, next) {
+  // console.log('rec', req.params, req.query)
+  reportService.getDaily(req.query)
+  .then(resp => {
+    // console.log('resp', resp)
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('getDailyError', err)
+    // res.json(err)
+  })
+}
 
 function getMonthly (req, res, next) {
   // console.log('rec', req.params, req.query)

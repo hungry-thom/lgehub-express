@@ -1,4 +1,6 @@
 const r = require('rethinkdb')
+const config = require('../../ngrok.json')
+const HOST = config.host
 
 module.exports = {
   getActiveDrawerByTerminal,
@@ -11,10 +13,9 @@ module.exports = {
   getDrawerListCount
 }
 
-const hostConf = '192.168.100.102'
 // const hostConf = 'localhost'
 const dbConfig = {
-  host: hostConf,
+  host: HOST,
   port: 28015,
   db: 'test'
 }
