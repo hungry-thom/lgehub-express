@@ -9,9 +9,12 @@ const reportService = require('./report.service');
 // router.get('/', authorize(), getEmployeeList);
 // router.get('/', authorize(), getAll); // admin only use -> authorize(Role.Admin)
 router.get('/getrevenue', authorize(), getRevenue);
+router.get('/getexpense', authorize(), getExpense);
 router.get('/getpandl', authorize(), getPandL);
 router.get('/monthly/:acct', authorize(), getMonthly);
 router.get('/daily/', authorize(), getDaily);
+router.get('/getgrouplist/', authorize(), getGroupList);
+router.post('/savegrouplist', authorize(), saveGroupList); // public route
 module.exports = router;
 
 function getDaily (req, res, next) {
@@ -54,12 +57,43 @@ function getPandL (req, res, next) {
 }
 
 function getRevenue (req, res, next) {
-  reportService.getRevenue(req.query.startDate, req.query.endDate)
+  reportService.getRevenueAccount(req.query.startDate, req.query.endDate)
   .then(resp => {
     res.json(resp)
   })
   .catch(err => {
     console.log('gerRevenueError', err)
+  })
+}
+
+function getExpense (req, res, next) {
+  reportService.getExpenseAccount(req.query.startDate, req.query.endDate)
+  .then(resp => {
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('gerRevenueError', err)
+  })
+}
+
+function saveGroupList (req, res, next) {
+  reportService.saveGroupList(req.body)
+  console.log('saveGroupList', req.body)
+  .then(resp => {
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('saveGroupListError', err)
+  })
+}
+
+function getGroupList (req, res, next) {
+  reportService.getGroupList()
+  .then(resp => {
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('getGroupListError', err)
   })
 }
 

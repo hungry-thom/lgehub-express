@@ -5,31 +5,41 @@ module.exports = {
   getRevenue,
   getPandL,
   getMonthly,
-  getDaily
+  getDaily, 
+  getRevenueAccount,
+  getExpenseAccount,
+  saveGroupList,
+  getGroupList
 };
 
 async function getDaily(query) {
-  console.log('getMonthly', acct, query)
+  console.log('getMonthly', query)
   let itemList = []
   let transactions = await model.getTransactions(query.startDate, query.endDate)
   let dex = 0
   while (dex < transactions.length) {
     let transaction  = transactions[dex]
-    let itemIndex = itemList.findIndex(i => i.item === transaction.item)
-    if (itemIndex < 0) {
-      let newItem = {
-        item: transaction.item,
-        totalCost: transaction.cost,
-        totalQty: transaction.qty || 1
-      }
-      itemList.push(newItem)
-    } else {
-      itemList[itemIndex].totalCost += transaction.cost
-      itemList[itemIndex].totalQty += transaction.qty || 1
+    // NOTE: receivePayment TransactionType, does not have ref
+    if (transaction.ref && transaction.ref.includes('revenue')) {
+      // need to classify which business
+      let business
+      transaction.credits.map(credit => {
+        let amount = 0
+        let account = ''
+        if (credit.account.includes('equity')) {
+          // can get businessID
+          let breakdown = credit.account.split(';;')
+          business = breakdown[2] ? breakdown[2] : ''
+          account = credit.account.split('::')[1]
+          amount += credit.amount
+        }
+        let businessIndex = businessList.findIndex(b => b.business === business)
+        // if businessList[businessIndex].
+      })
     }
     dex++
   }
-  return itemList
+  return transactions
 }
 
 async function getMonthly(acct, query) {
@@ -104,6 +114,31 @@ async function  getPandL (startDate, endDate) {
   return month
 }
 
+async function saveGroupList (groupList) {
+  let resp = await model.saveGroupList(groupList)
+  return resp
+}
+
+async function getGroupList () {
+  let resp = await model.getGroupList()
+  return resp
+}
+
+async function getRevenueAccount (startDate, endDate) {
+  let sDate = new Date(startDate).toISOString()
+  let eDate = new Date(endDate).toISOString()
+  console.log(sDate, eDate)
+  let resp = await model.getRevenueAccount(sDate, eDate)
+  return resp
+}
+
+async function getExpenseAccount (startDate, endDate) {
+  let sDate = new Date(startDate).toISOString()
+  let eDate = new Date(endDate).toISOString()
+  console.log(sDate, eDate)
+  let resp = await model.getExpenseAccount(sDate, eDate)
+  return resp
+}
 
 async function  getRevenue (startDate, endDate) {
   let sDate = new Date(startDate) // new Date setsHours(0,0,0,0)
@@ -114,7 +149,7 @@ async function  getRevenue (startDate, endDate) {
   let ed = new Date(eDate) // eDate doesnt have toISOString after set hours?
   */
   // const resp = await model.getRevenueBasic(sDate.toISOString(), ed.toISOString());
-  const resp = await model.getRevenue(sDate.toISOString(), eDate.toISOString()); // get list of revenuegrouped by account with total amount
+  const resp = await model.getRevenueAccount(sDate.toISOString(), eDate.toISOString()); // get list of revenuegrouped by account with total amount
   let dex = 0
   let locationList = []
   while (dex < resp.length) {

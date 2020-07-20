@@ -6,7 +6,10 @@ module.exports = {
 //  newEmployee,
   getTransactions,
   getRevenueType,
-  getRevenueAccount
+  getRevenueAccount,
+  getExpenseAccount,
+  saveGroupList,
+  getGroupList
 };
 
 // const hostConf = '192.168.100.102'
@@ -76,7 +79,54 @@ async function getRevenueAccount(startDate, endDate) {
   return resp
 }
 
+async function getExpenseAccount(startDate, endDate) {
+  let connection, resp
+  try {
+    connection = await r.connect(dbConfig)
+    resp = await r.table('Transactions').filter(function(exp) {
+      return r.ISO8601(exp('transactionDate')).ge(r.ISO8601(startDate)).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601(endDate))).and(exp('transactionType').eq('expense'))
+    }).concatMap(function(items) {
+      return items('transactionItems')
+      }).group('item').sum('cost').run(connection)
+  }
+  catch (err) {
+    console.log('getRevenueError', err)
+  }
+  connection && connection.close()
+
+  return resp
+}
+
+async function saveGroupList(groupList) {
+  let connection, resp
+  try {
+    connection = await r.connect(dbConfig)
+    resp = await r.table('GroupList').insert(groupList, { conflict: "replace"}).run(connection)
+  }
+  catch (err) {
+    console.log('saveGroupListError', err)
+  }
+  connection && connection.close()
+
+  return resp
+}
+
+async function getGroupList() {
+  let connection, resp
+  try {
+    connection = await r.connect(dbConfig)
+    resp = await r.table('GroupList').run(connection)
+  }
+  catch (err) {
+    console.log('saveGroupListError', err)
+  }
+  connection && connection.close()
+
+  return resp.toArray()
+}
 /*
+
+
 async function newEmployee (details) {
   let connection, resp;
   try {
