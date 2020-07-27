@@ -15,6 +15,7 @@ router.get('/monthly/:acct', authorize(), getMonthly);
 router.get('/daily/', authorize(), getDaily);
 router.get('/getgrouplist/', authorize(), getGroupList);
 router.post('/savegrouplist', authorize(), saveGroupList); // public route
+router.get('/getbalancesheet', authorize(), getBalanceSheet);
 module.exports = router;
 
 function getDaily (req, res, next) {
@@ -56,6 +57,16 @@ function getPandL (req, res, next) {
   })
 }
 
+function getBalanceSheet (req, res, next) {
+  reportService.getBalanceSheet(req.query.startDate, req.query.endDate)
+  .then(resp => {
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('getBalanceSheetError', err)
+  })
+}
+
 function getRevenue (req, res, next) {
   reportService.getRevenueAccount(req.query.startDate, req.query.endDate)
   .then(resp => {
@@ -78,8 +89,9 @@ function getExpense (req, res, next) {
 
 function saveGroupList (req, res, next) {
   reportService.saveGroupList(req.body)
-  console.log('saveGroupList', req.body)
+  // console.log('saveGroupList', req.body)
   .then(resp => {
+    console.log('savedGroupList', resp)
     res.json(resp)
   })
   .catch(err => {

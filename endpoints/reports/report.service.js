@@ -9,7 +9,8 @@ module.exports = {
   getRevenueAccount,
   getExpenseAccount,
   saveGroupList,
-  getGroupList
+  getGroupList,
+  getBalanceSheet
 };
 
 async function getDaily(query) {
@@ -64,6 +65,93 @@ async function getMonthly(acct, query) {
     dex++
   }
   return itemList
+}
+
+async function  getBalanceSheet (startDate, endDate) {
+  let sDate = new Date(startDate) // new Date setsHours(0,0,0,0)
+  let eDate = new Date(endDate)
+  console.log('dates', sDate, eDate)
+  const allTransactions = await model.getTransactionsIntact(sDate.toISOString(), eDate.toISOString()); // get list of revenuegrouped by account with total amount
+  // parse each transaction into ['vendor/customer', 'transNum', 'acctRec', 'prepaid', 'cash', '=>', '<=', 'payable', 'expense', 'revenue']
+  console.log('allTransactions', allTransactions.length)
+  let transDex = 0
+  let balanceSheetList = [{}]
+  let grandTotal = balanceSheetList[0]
+  grandTotal['acctRec'] = 0
+  grandTotal['prepaid'] = 0
+  grandTotal['cash'] = 0
+  grandTotal['=>'] = 0
+  grandTotal['<='] = 0
+  grandTotal['payable'] = 0
+  grandTotal['gst'] = 0
+  grandTotal['expense'] = 0
+  grandTotal['revenue'] = 0
+  while (transDex < allTransactions.length) {
+    let trans = allTransactions[transDex]
+    if (trans.transactionType === 'transfer') break
+    let row = {}
+    row['id'] = trans.id
+    row['name'] = trans.vendor || trans.customer
+    row['transNum'] = trans.transactionNum
+    row['=>'] = 0
+    row['<='] = 0
+    let itemsDex = 0
+    while (itemsDex < trans.transactionItems.length) {
+      let item = trans.transactionItems[itemsDex]
+      item.credits.map(cr => {
+        let details = cr.account.split('::')
+        let account = details[1]
+        if (['equity', 'liability'].includes(details[0])) {
+          let factor = (account === 'expense') ? -1 : 1
+          if (row[account]) {
+            row[account] += (cr.amount * factor)
+          } else {
+            row[account] = (cr.amount * factor)
+          }
+          row['<='] += cr.amount
+          grandTotal['<='] += cr.amount
+          grandTotal[account] += (cr.amount * factor)
+        } else {
+          if (row[account]) {
+            row[account] -= cr.amount
+          } else {
+            row[account] = (cr.amount * -1)
+          }
+          row['=>'] -= cr.amount
+          grandTotal['=>'] -= cr.amount
+          grandTotal[account] -= cr.amount
+        }
+      })
+      item.debits.map(dr => {
+        let details = dr.account.split('::')
+        let account = details[1]
+        if (details[0] === 'equity') {
+          // let factor = (account === 'expense') ? -1 : 1
+          if (row[account]) {
+            row[account] -= (dr.amount)
+          } else {
+            row[account] = (dr.amount * -1)
+          }
+          row['<='] -= dr.amount
+          grandTotal['<='] -= dr.amount
+          grandTotal[account] -= dr.amount
+        } else {
+          if (row[account]) {
+            row[account] += dr.amount
+          } else {
+            row[account] = dr.amount
+          }
+          row['=>'] += dr.amount
+          grandTotal['=>'] += dr.amount
+          grandTotal[account] += dr.amount
+        }
+      })
+      itemsDex++
+    }
+    balanceSheetList.push(row)
+    transDex++
+  }
+  return balanceSheetList
 }
 
 async function  getPandL (startDate, endDate) {

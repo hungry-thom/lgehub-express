@@ -9,7 +9,8 @@ module.exports = {
   getRevenueAccount,
   getExpenseAccount,
   saveGroupList,
-  getGroupList
+  getGroupList,
+  getTransactionsIntact
 };
 
 // const hostConf = '192.168.100.102'
@@ -29,6 +30,22 @@ async function getTransactions (startDate, endDate) {
       return r.ISO8601(exp('transactionDate')).ge(r.ISO8601(startDate)).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601(endDate)))
     }).concatMap(function (item) {
       return item('transactionItems')
+    }).run(connection)
+  }
+  catch (err) {
+    console.log('getRevenueError', err)
+  }
+  // connection && connection.close()
+
+  return resp.toArray()
+}
+
+async function getTransactionsIntact (startDate, endDate) {
+  let connection, resp
+  try {
+    connection = await r.connect(dbConfig)
+    resp = await r.table('Transactions').filter(function(exp) {
+      return r.ISO8601(exp('transactionDate')).ge(r.ISO8601(startDate)).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601(endDate)))
     }).run(connection)
   }
   catch (err) {
