@@ -1,5 +1,5 @@
 const r = require('rethinkdb');
-const config = require('../../config.json')
+const config = require('../../ngrok.json')
 const HOST = config.host
 
 module.exports = {

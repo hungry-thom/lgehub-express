@@ -1,15 +1,16 @@
 const r = require('rethinkdb')
+const config = require('../../ngrok.json')
+const HOST = config.host
 
 module.exports = {
   getItemList
 }
 
-const hostConf = '192.168.100.102'
 // const hostConf = 'localhost'
 const dbConfig = {
-  host: hostConf,
+  host: HOST,
   port: 28015,
-  db: 'test'
+  db: 'koox'
 }
 
 async function getItemList (startDate, earlierDate) {
@@ -17,16 +18,23 @@ async function getItemList (startDate, earlierDate) {
   console.log('++++getAllItems')
   try {
     connection = await r.connect(dbConfig)
-    itemObjList = await r.table('trans').concatMap(function (trans) {
-      return trans('transactionType').eq('expense').and(r.ISO8601(trans('transactionDate')).lt(r.ISO8601(startDate))).and(r.ISO8601(trans('transactionDate')).gt(r.ISO8601(earlierDate))).and(trans('transItems').filter(function (item) {
+    itemObjList = await r.table('Transactions').filter(function(exp) {
+      return r.ISO8601(exp('transactionDate')).ge(r.ISO8601('2019-11-01T00:01:00.000Z')).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601('2020-07-01T00:01:00.000Z'))).and(exp('transactionType').eq('expense'))
+    }).concatMap(function(items) {
+      return items('transactionItems')
+    }).run(connection)
+    /*
+    itemObjList = await r.table('Transactions').concatMap(function (trans) {
+      return trans('transactionType').eq('expense').and(r.ISO8601(trans('transactionDate')).lt(r.ISO8601(startDate))).and(r.ISO8601(trans('transactionDate')).gt(r.ISO8601(earlierDate))).and(trans('transactionItems').filter(function (item) {
         return item
       }))
     }).run(connection)
+    */
   }
   catch (err) {
     console.log('++++itemObjListError', err)
   }
-  connection && connection.close()
+  // connection && connection.close()
   return itemObjList.toArray()
 }
 

@@ -16,7 +16,7 @@ module.exports = {
 const dbConfig = {
   host: HOST,
   port: 28015,
-  db: 'test'
+  db: 'koox'
 }
 
 async function getById (id) {
@@ -24,7 +24,7 @@ async function getById (id) {
   let connection, transaction
   try {
     connection = await r.connect(dbConfig)
-    transaction = await r.table('trans').get(id).run(connection)
+    transaction = await r.table('Transactions').get(id).run(connection)
   } catch (err) {
     console.log('++++getByIdError', err)
   }
@@ -38,7 +38,7 @@ async function getVendorList (type) {
   let connection, vendorList
   try {
     connection = await r.connect(dbConfig)
-    vendorList = await r.table('trans').filter(r.row('transactionType').eq(type)).pluck('vendor').distinct().run(connection)
+    vendorList = await r.table('Transactions').filter(r.row('transactionType').eq(type)).pluck('vendor').distinct().run(connection)
   } catch (err) {
     console.log('++++getVendorlistError', err)
   }
@@ -50,7 +50,7 @@ async function listExpenses (startDate, endDate) {
   let connection, expenseList
   try {
     connection = await r.connect(dbConfig)
-    expenseList = await r.table('trans').orderBy(r.desc(r.row('transactionDate'))).filter(r.ISO8601(r.row('transactionDate')).le(r.ISO8601(endDate)).and(r.ISO8601(r.row('transactionDate')).ge(r.ISO8601(startDate)))).run(connection)
+    expenseList = await r.table('Transactions').orderBy(r.desc(r.row('transactionDate'))).filter(r.ISO8601(r.row('transactionDate')).le(r.ISO8601(endDate)).and(r.ISO8601(r.row('transactionDate')).ge(r.ISO8601(startDate)))).run(connection)
   } catch (err) {
     console.log(err)
   }
@@ -62,7 +62,7 @@ async function postNewExpense (transaction) {
   let connection, result
   try {
     connection = await r.connect(dbConfig)
-    result = await r.table('trans').insert(transaction, { conflict: 'replace' }).run(connection)
+    result = await r.table('Transactions').insert(transaction, { conflict: 'replace' }).run(connection)
   }
   catch (err) {
     console.log(err)
