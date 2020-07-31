@@ -199,6 +199,7 @@ async function  getPandL (startDate, endDate) {
     ++dex
   }
   // todo: figure ratios
+  month['COGS']['cogsRatio'] = month['COGS']['subTotal'] / month['revenue']['revTotal']
   return month
 }
 
