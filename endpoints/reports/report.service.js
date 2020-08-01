@@ -200,6 +200,8 @@ async function  getPandL (startDate, endDate) {
   }
   // todo: figure ratios
   month['COGS']['cogsRatio'] = month['COGS']['subTotal'] / month['revenue']['revTotal']
+  month['opExp']['opExpRatio'] = month['opExp']['subTotal'] / month['revenue']['revTotal']
+  month['income']['netIncomeRatio'] = month['income']['netIncome'] / month['revenue']['revTotal']
   return month
 }
 
