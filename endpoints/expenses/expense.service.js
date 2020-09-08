@@ -2,18 +2,45 @@ const model = require('./expense.rethinkdb.model.js')
 // const _ = require('lodash')
 
 module.exports = {
-  getItemList
+  getItemList,
+  getExpense,
+  findId
 }
 
 function localTimeOffset () {
   return new Date() - 21600000
 }
 
+async function findId (vendor, tNum) {
+  console.log('====serviceFindId', vendor, tNum)
+  let expense = await model.findId(vendor, tNum)
+  // console.log('====ServiceFindIdResp', expense)
+  return expense.id
+}
+  
+
 async function getItemList (startDate, earlierDate) {
-  console.log('====servExpGetItemList')
+  console.log('====servExpGetItemList', startDate, earlierDate)
   let itemList = await model.getItemList(startDate, earlierDate)
   console.log('====servExpGetItemList')
   return itemList
+}
+
+async function getExpense (id) {
+  let expense = await model.getExpense(id)
+  expense.transactionItems.forEach(item => {
+    if (!item['debitAccount']) {
+      console.log('debitAccount')
+      item.debits.forEach(dr => {
+        if (dr.account.includes('equity')) {
+          let drAccount = dr.account.split('::')
+          drAccount = drAccount.slice(2).join('::')
+          item['debitAccount'] = drAccount
+        }
+      })
+    }
+  })
+  return expense
 }
 
 /*

@@ -3,7 +3,9 @@ const config = require('../../ngrok.json')
 const HOST = config.host
 
 module.exports = {
-  getItemList
+  getItemList,
+  getExpense,
+  findId
 }
 
 // const hostConf = 'localhost'
@@ -13,13 +15,41 @@ const dbConfig = {
   db: 'koox'
 }
 
+async function findId (vendor, tNum) {
+  let connection, expense
+  try {
+    connection = await r.connect(dbConfig)
+    expense = await r.table('Transactions').filter(r.row('vendor').eq(vendor).and(r.row('transactionNum').eq(tNum))).run(connection)
+  }
+  catch (err) {
+    console.log('rethinkFindIdError', err)
+  }
+  connection && connection.close()
+
+  return expense.next()
+
+}
+
+async function getExpense (id) {
+  let connection, expense
+  try {
+    connection = await r.connect(dbConfig)
+    expense = await r.table('Transactions').get(id).run(connection)
+  }
+  catch (err) {
+    console.log('rethinkGetExpenseError')
+  }
+
+  return expense
+}
+
 async function getItemList (startDate, earlierDate) {
   let connection, itemObjList
   console.log('++++getAllItems')
   try {
     connection = await r.connect(dbConfig)
     itemObjList = await r.table('Transactions').filter(function(exp) {
-      return r.ISO8601(exp('transactionDate')).ge(r.ISO8601('2019-11-01T00:01:00.000Z')).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601('2020-07-01T00:01:00.000Z'))).and(exp('transactionType').eq('expense'))
+      return r.ISO8601(exp('transactionDate')).ge(r.ISO8601(earlierDate)).and(r.ISO8601(exp('transactionDate')).lt(r.ISO8601(startDate))).and(exp('transactionType').eq('expense'))
     }).concatMap(function(items) {
       return items('transactionItems')
     }).run(connection)

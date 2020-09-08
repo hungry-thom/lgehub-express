@@ -1,4 +1,5 @@
 const model = require('./report.rethinkdb.model.js');
+// const moment = require('moment');
 
 module.exports = {
 //  newEmployee
@@ -10,8 +11,43 @@ module.exports = {
   getExpenseAccount,
   saveGroupList,
   getGroupList,
-  getBalanceSheet
+  getBalanceSheet,
+  getWeeklyRevenue,
+  getRevenueTimes
 };
+
+async function getRevenueTimes(query) {
+  let revenueList = await model.getWeeklyRevenue(query.startOfWeek, query.endOfWeek)
+  let dex = revenueList.length - 1
+  let revResponse = []
+  revResponse.push(['Date', 'Time'])
+  while (dex > -1) {
+    transaction = revenueList[dex]
+    if (transaction.paymentAccount.includes(query.acct) || query.acct === 'all') {
+      // formate time of day
+      let dateTimeSplit = transaction.transactionDate.split('T')
+      let timeConvert = dateTimeSplit[1].substr(0,5).split(':')
+      console.log('split', dateTimeSplit[1], timeConvert)
+      let minutes = Number(timeConvert[1]) / 60
+      timeConvert[1] = Math.round((minutes + Number.EPSILON) * 100)
+      dateTimeSplit[1] = Number(timeConvert.join('.'))
+      console.log('dt', dateTimeSplit[1])
+      // dateTimeSplit[1] = Number(dateTimeSplit[1])
+      
+      // format date
+      /*
+      let day = dateTimeSplit[0].split('-')
+      day = day.slice(1)
+      day = day.join('')
+      day = Number(day) / 100
+      dateTimeSplit[0] = Math.round((day + Number.EPSILON) * 100 ) / 100
+      */
+      revResponse.push(dateTimeSplit)
+    }
+    dex--
+  }
+  return revResponse
+}
 
 async function getDaily(query) {
   console.log('getMonthly', query)
@@ -41,6 +77,68 @@ async function getDaily(query) {
     dex++
   }
   return transactions
+}
+
+async function getWeeklyRevenue(query) {
+  let transactions = await model.getWeeklyRevenue(query.startOfWeek, query.endOfWeek)
+  let dex = transactions.length - 1
+  let name = { 'Label': 'name' }
+  let AM = { 'Label': 'AM', 'Total': 0 }
+  let PM = { 'Label': 'PM', 'Total': 0 }
+  let meatshop = { 'Label': 'meatshop', 'Total': 0 }
+  let total = { 'Label': 'total', 'Total': 0 }
+  let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  while (dex > -1) {
+    let transaction = transactions[dex]
+    // console.log('getRevenueResp', transaction)
+    let d = new Date(transaction.transactionDate)
+    let dayIndex = d.getDay()
+    let dayOfWeek = daysOfWeek[dayIndex]
+    let sTotal = Number(transaction.subTotal)
+
+    if (total[dayOfWeek]) {
+      total[dayOfWeek] += sTotal
+    } else {
+      total[dayOfWeek] = sTotal
+    }
+    total['Total'] += sTotal
+
+    if (!name[dayOfWeek]) {
+      let mon = d.toLocaleString('en-EN', { month: 'short' })
+      name[dayOfWeek] = `${d.getDate()}-${mon}`
+    }
+
+    if (transaction.paymentAccount.includes('restaurant')) {
+      switch (transaction.customer) {
+        case 'PM' :
+          if (PM[dayOfWeek]) {
+            PM[dayOfWeek] += sTotal
+          } else {
+            PM[dayOfWeek] = sTotal
+          }
+          PM['Total'] += sTotal
+          break
+        case 'AM' :
+        default :
+          if (AM[dayOfWeek]) {
+            AM[dayOfWeek] += sTotal
+          } else {
+            AM[dayOfWeek] = sTotal
+          }
+          AM['Total'] += sTotal
+          break
+      }
+    } else {
+      if (meatshop[dayOfWeek]) {
+        meatshop[dayOfWeek] += sTotal
+      } else {
+        meatshop[dayOfWeek] = sTotal
+      }
+      meatshop['Total'] += sTotal
+    }
+    dex--
+  }
+  return [name, AM, PM, meatshop, total, {}]
 }
 
 async function getMonthly(acct, query) {
@@ -82,7 +180,7 @@ async function  getBalanceSheet (startDate, endDate) {
   grandTotal['cash'] = 0
   grandTotal['=>'] = 0
   grandTotal['<='] = 0
-  grandTotal['payable'] = 0
+  grandTotal['acctPay'] = 0
   grandTotal['gst'] = 0
   grandTotal['expense'] = 0
   grandTotal['revenue'] = 0

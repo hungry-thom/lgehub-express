@@ -16,6 +16,8 @@ router.get('/daily/', authorize(), getDaily);
 router.get('/getgrouplist/', authorize(), getGroupList);
 router.post('/savegrouplist', authorize(), saveGroupList); // public route
 router.get('/getbalancesheet', authorize(), getBalanceSheet);
+router.get('/getweeklyrevenue', authorize(), getWeeklyRevenue);
+router.get('/getrevenuetimes', authorize(), getRevenueTimes);
 module.exports = router;
 
 function getDaily (req, res, next) {
@@ -27,6 +29,32 @@ function getDaily (req, res, next) {
   })
   .catch(err => {
     console.log('getDailyError', err)
+    // res.json(err)
+  })
+}
+
+function getRevenueTimes (req, res, next) {
+  // console.log('rec', req.params, req.query)
+  reportService.getRevenueTimes(req.query)
+  .then(resp => {
+    // console.log('resp', resp)
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('getRevenueTimesError', err)
+    // res.json(err)
+  })
+}
+
+function getWeeklyRevenue (req, res, next) {
+  // console.log('rec', req.params, req.query)
+  reportService.getWeeklyRevenue(req.query)
+  .then(resp => {
+    // console.log('resp', resp)
+    res.json(resp)
+  })
+  .catch(err => {
+    console.log('getWeeklySalesError', err)
     // res.json(err)
   })
 }

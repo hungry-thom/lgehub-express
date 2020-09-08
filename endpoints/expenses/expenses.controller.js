@@ -9,7 +9,18 @@ const Role = require('../../_helpers/role');
 // router.post('/closing', authorize(), closeDrawer);
 // router.get('/:terminal/', authorize(), getActiveDrawerByTerminal);
 router.get('/getitemlist', getItemList);
+router.get('/getExpense/:id', getExpense);
+router.get('/findid', findId);
 module.exports = router;
+
+function findId (req, res, next) {
+  expenseService.findId(req.query.vendor, req.query.num)
+  .then(expId => {
+    res.json(expId)
+  }).catch(err => {
+    console.log('---controllerFindIdError', err)
+  })
+}
 
 function getItemList (req, res, next) {
   console.log('---controlExpGetItemList')
@@ -19,6 +30,15 @@ function getItemList (req, res, next) {
     res.json(itemList)
   }).catch(err => {
     console.log('---controlExpItemListError', err)
+  })
+}
+
+function getExpense (req, res, next) {
+  expenseService.getExpense(req.params.id)
+  .then(expense => {
+    res.json(expense)
+  }).catch(err => {
+    console.log('getExepsneError', err)
   })
 }
 
