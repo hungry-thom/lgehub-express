@@ -12,7 +12,7 @@ module.exports = {
 const dbConfig = {
   host: HOST,
   port: 28015,
-  db: 'test'
+  db: 'koox'
 }
 
 async function getAllItems () {
@@ -20,16 +20,14 @@ async function getAllItems () {
   console.log('++++getAllItems')
   try {
     connection = await r.connect(dbConfig)
-    itemObjList = await r.table('trans').concatMap(function (trans) {
-      return trans('transactionType').eq('expense').and(trans('transItems').filter(function (items) {
-        return items
-      }))
+    itemObjList = await r.table('Transactions').filter(r.row('transactionType').eq('expense')).concatMap(function (trans) {
+      return trans('transactionItems')
     }).run(connection)
   }
   catch (err) {
     console.log('++++itemObjListError', err)
   }
-  connection && connection.close()
+  // connection && connection.close()
   return itemObjList.toArray()
 }
 
